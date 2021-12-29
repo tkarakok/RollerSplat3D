@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class GameMaanager : Singleton<GameMaanager>
+public class GameManager : Singleton<GameManager>
 {
     [Header("Level Texture")]
     [SerializeField] private Texture2D _levelTexture;
@@ -33,6 +33,7 @@ public class GameMaanager : Singleton<GameMaanager>
 
     void Generate()
     {
+        
         _unitPerPixel = _prefabWall.transform.lossyScale.x;
         float _halfUnitPerPixel = _unitPerPixel / 2;
 

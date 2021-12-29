@@ -18,9 +18,11 @@ public class PaintManager : Singleton<PaintManager>
         road.isPainted = true;
         paintedRoads.Add(road);
 
-        if (GameMaanager.Instance.roadCounts == MovementController.Instance.paintedRoads.Count)
+        if (GameManager.Instance.roadCounts == MovementController.Instance.paintedRoads.Count)
         {
-            Debug.Log("Finish");
+
+            PlayerPrefs.SetInt("Level", (LevelManager.Instance.CurrentLevel + 1));
+            StateManager.Instance.state = State.EndGame;
         }
     }
 }

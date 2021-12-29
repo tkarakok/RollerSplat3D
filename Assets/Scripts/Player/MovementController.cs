@@ -11,7 +11,7 @@ public class MovementController : Singleton<MovementController>
 
     [SerializeField] private LayerMask wallsAndRoadsLayer;
     [SerializeField] private float _stepDuration = .1f;
-    
+    [SerializeField] Ease ease;
 
     private const float MAX_RAY_DISTANCE = 100f;
     
@@ -22,7 +22,7 @@ public class MovementController : Singleton<MovementController>
     private void Start()
     {
         //change default position
-        transform.position = GameMaanager.Instance.defaultBallRoad.transform.position;
+        transform.position = GameManager.Instance.defaultBallRoad.transform.position;
         
         SwipeListener.Instance.OnSwipe.AddListener(swipe =>
         {
@@ -47,41 +47,43 @@ public class MovementController : Singleton<MovementController>
 
     void PlayerMove()
     {
-
-        RaycastHit[] hits = Physics.RaycastAll(transform.position, _direction, MAX_RAY_DISTANCE, wallsAndRoadsLayer.value)
+        if (StateManager.Instance.state == State.InGame)
+        {
+            RaycastHit[] hits = Physics.RaycastAll(transform.position, _direction, MAX_RAY_DISTANCE, wallsAndRoadsLayer.value)
                                     .OrderBy(hit => hit.distance).ToArray();
 
 
-        for (int i = 0; i < hits.Length; i++)
-        {
-            if (!hits[i].transform.gameObject.CompareTag("Wall"))
+            for (int i = 0; i < hits.Length; i++)
             {
-                Road paintObject = hits[i].transform.GetComponent<Road>();
-                if (!paintObject.isPainted)
+                if (!hits[i].transform.gameObject.CompareTag("Wall"))
                 {
-                    PaintManager.Instance.Paint(paintObject,paintedRoads);
-                    
-                }
-            }
-            else
-            {
-                if (i == 0)
-                {
-                    return;
+                    Road paintObject = hits[i].transform.GetComponent<Road>();
+                    if (!paintObject.isPainted)
+                    {
+                        PaintManager.Instance.Paint(paintObject, paintedRoads);
+
+                    }
                 }
                 else
                 {
-                    int _steps = i;
-                    Vector3 _targetPosition = hits[i - 1].transform.position;
-                    float _moveDuration = _steps * _stepDuration;
-                    transform
-                      .DOMove(_targetPosition, _moveDuration)
-                      .SetEase(Ease.OutBack);
-                    break;
+                    if (i == 0)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        int _steps = i;
+                        Vector3 _targetPosition = hits[i - 1].transform.position;
+                        float _moveDuration = _steps * _stepDuration;
+                        transform
+                          .DOMove(_targetPosition, _moveDuration)
+                          .SetEase(ease);
+                        break;
+                    }
                 }
             }
+
+
         }
-
-
     }
 }
